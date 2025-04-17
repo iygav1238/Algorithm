@@ -1,3 +1,9 @@
+/*
+    Author : iygav1238
+    전처리를 통해서 a[i][j] = (i, j)가 물이 되는 처음 날짜로 정한 다음, 
+    어떤 백조에서 다른 백조로 이동할 때 이동하는 칸의 값들 중 최댓값이 최소가 되는 걸 다익스트라로 찾음
+*/
+
 #include <bits/stdc++.h>
 using namespace std;
 
