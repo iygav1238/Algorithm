@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define MAXN 1011
+
+vector<int> graph[MAXN];
+vector<int> mat(MAXN, -1);
+bool visited[MAXN];
+
+bool dfs(int u){
+    if (visited[u]) return false;
+    visited[u] = true;
+    for (auto v : graph[u]){
+        if (mat[v] == -1 || dfs(mat[v])) {
+            mat[v] = u;
+            return true;
+        }
+    }
+    return false;
+}
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr), cout.tie(nullptr); 
+
+    int n, m, k; cin >> n >> m >> k;
+    for (int i = 1; i<=n; i++) {
+        int many; cin >> many;
+        for (int _ = 0; _ < many; _++){
+            int w; cin >> w;
+            graph[i].push_back(w);
+        }
+    }
+
+    int res = 0;
+    for (int i = 1; i<=n; i++) {
+        memset(visited, false, sizeof(visited));
+        res += dfs(i);
+    }
+
+    for (int i = 1; i<=n; i++) {
+        if (k <= 0) break;
+        while (k) {
+            memset(visited, false, sizeof(visited));
+            if (dfs(i)) {
+                k--;
+                res++;
+            } else break;
+        }
+        
+    }
+
+    cout << res << "\n";
+
+    return 0;
+}
