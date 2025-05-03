@@ -8,20 +8,17 @@ const int MOD = 998244353;
 const int INF = 1000000000000000002LL;
 
 int n;
- 
 void solve() {
-    vector<int> a(n+1);
-    vector<int> dp(n+2, -INF), pre(n+1, 0);
-    dp[n+1] = 0;
+    vector<int> a(n+1), dp(n+2, 0), pre(n+1, 0);
     for (int i = n; i >= 1; i--) cin >> a[i];
     for (int i = 1; i <= n; i++) pre[i] = pre[i-1] + a[i];
  
-    for (int cur = n; cur >= 1; cur--) {
+    for (int i = n; i>=1; i--) {
         int tmp = INF;
-        for (int i = cur; i <= n; i++) {
-            tmp = min(tmp, pre[i] - pre[cur-1] - dp[i+1]);
+        for (int j = i; j<=n; j++) {
+            tmp = min(tmp, pre[j] - pre[i-1] - dp[j+1]);
         }
-        dp[cur] = tmp;
+        dp[i] = tmp;
     }
 
     if (dp[1] < 0) cout << "A" << endl;
