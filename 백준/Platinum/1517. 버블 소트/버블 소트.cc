@@ -7,46 +7,28 @@ using namespace std;
 const int MOD = 998244353;
 const int INF = 1000000000000000002LL;
 
-struct Segtree {
-    int tree[1 << 20];
-    int size = 1 << 19;
-
-    void update(int i) {
-        i += size;
-        tree[i]++;
-        while (i > 1) {
-            i /= 2;
-            tree[i]++;
-        }
-    }
-
-    int query(int i) {
-        int l = size + i+1, r = 2*size-1;
-        int res = 0;
-        while (l <= r) {
-            if (l & 1) res += tree[l++];
-            if (~r & 1) res += tree[r--];
-            l /= 2;
-            r /= 2;
-        }
-        return res;
-    }
-
-} tree;
+struct BIT {
+    int n; vector<int> t;
+    BIT(int n): n(n), t(n+1,0) {}
+    void add(int i,int v){ for(; i<=n; i+=i&-i) t[i]+=v; }
+    int sum(int i){ int s=0; for(; i>0; i-=i&-i) s+=t[i]; return s; }
+};
 
 void solve() {
     int n; cin >> n;
     vector<int> a(n), b;
     for (auto &x : a) cin >> x;
+    
     b = a;
     sort(b.begin(), b.end());
     b.erase(unique(b.begin(), b.end()), b.end());
-    for(int &x : a) x = lower_bound(b.begin(), b.end(),x) - b.begin() + 1;
+    for(int &x : a) x = lower_bound(b.begin(), b.end(), x) - b.begin()+1;
 
+    BIT bit(b.size());
     int res = 0;
-    for (auto x : a) {
-        res += tree.query(x);
-        tree.update(x);
+    for(int x : a){
+        res += (bit.sum(b.size()) - bit.sum(x));
+        bit.add(x,1);
     }
     cout << res << endl;
 }
