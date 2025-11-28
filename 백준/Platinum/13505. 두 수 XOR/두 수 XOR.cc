@@ -2,59 +2,79 @@
 using namespace std;
 
 #define int long long
-#define INF (int)1e18
 #define endl "\n"
+#define FOR(i, a, b, c) for (int i = a; (c > 0 ? i<=b : i>=b); i+=c)
+
+#define heap priority_queue
+#define pii pair<int, int>
+#define tiii tuple<int, int, int>
+#define vi vector<int>
+#define vii vector<vector<int>>
+#define vpii vector<pair<int, int>>
+
+#define YES "YES"
+#define NO "NO"
 
 const int MOD = 998244353;
+const int INF = 1e18+2;
 
-struct Node {
-    Node *child[2] = {nullptr, nullptr};
+struct Trie {
+    struct Node {
+        Node *child[2] = {nullptr, nullptr};
+        int cnt = 0;
+    };
+    Node *root;
 
-    void insert(const string& s) {
-        Node* cur = this;
-        for (auto c : s) {
-            int x = c - '0';
-            if (!cur->child[x]) cur->child[x] = new Node;
-            cur = cur->child[x];
+    Trie() {
+        root = new Node();
+    }
+    
+    void Insert(int a) {
+        Node *node = root;
+        FOR(i, 60, 0, -1) {
+            int x = ((1LL << i) & a) ? 1 : 0;
+            if (!node->child[x]) node->child[x] = new Node();
+            node = node->child[x];
+            node->cnt++;
         }
     }
 
-    int search(const string& s) {
-        Node* cur = this;
+    void Remove(int a) {
+        Node *node = root;
+        FOR(i, 60, 0, -1) {
+            int x = ((1LL << i) & a) ? 1 : 0;
+            node = node->child[x];
+            node->cnt--;
+        }
+    }
+
+    int Search(int a) {
+        Node *node = root;
         int res = 0;
-        for (auto c : s) {
-            int x = c - '0';
-            int y = x ^ 1;
-            res <<= 1;
-            if (cur->child[y]) {
-                res |= 1;
-                cur = cur->child[y];
-            } else cur = cur->child[x];
+        FOR(i, 60, 0, -1) {
+            int x = ((1LL << i) & a) ? 1 : 0;
+            if (!node->child[x ^ 1] || node->child[x ^ 1]->cnt == 0) node = node->child[x];
+            else {
+                node = node->child[x ^ 1];
+                res |= (1LL << i);
+            }
         }
         return res;
     }
-};
+} trie;
 
 void solve() {
     int n; cin >> n;
-    vector<int> a(n);
-    for (auto &x : a) cin >> x;
-
-    Node *trie = new Node;
-
+    vi a(n+1);
+    FOR(i, 1, n, 1) {
+        cin >> a[i];
+        trie.Insert(a[i]);
+    }
     int res = 0;
-    for (int i = 0; i<n; i++) {
-        string cur = "";
-        for (int j = 31; j>=0; j--) {
-            if (a[i] & (1 << j)) cur += "1";
-            else cur += "0";
-        }
-
-        if (i > 0) {
-            int y = trie->search(cur);
-            res = max(res, y);
-        }
-        trie->insert(cur);
+    FOR(i, 1, n, 1) {
+        trie.Remove(a[i]);
+        res = max(res, trie.Search(a[i]));
+        trie.Insert(a[i]);
     }
     cout << res << endl;
 }
